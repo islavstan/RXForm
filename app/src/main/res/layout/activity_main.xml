@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_height="match_parent"
+    android:layout_width="match_parent"
+    >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        >
+
+
+
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/profile_input_email"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="25dp"
+            android:layout_marginRight="25dp"
+            android:layout_marginBottom="-10dp"
+
+            app:errorEnabled="true"
+            >
+            <EditText
+                android:id="@+id/profile_et_email"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textEmailAddress"
+
+                android:imeOptions="actionNext"
+                android:hint="Your email"
+                />
+        </android.support.design.widget.TextInputLayout>
+
+
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/profile_input_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="25dp"
+            android:layout_marginRight="25dp"
+            android:layout_marginBottom="-10dp"
+
+            app:errorEnabled="true"
+            >
+            <EditText
+                android:id="@+id/profile_et_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textPersonName"
+
+                android:imeOptions="actionNext"
+                android:hint="Your password"
+                />
+        </android.support.design.widget.TextInputLayout>
+
+
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/profile_input_number"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="25dp"
+            android:layout_marginRight="25dp"
+            android:layout_marginBottom="-10dp"
+
+            app:errorEnabled="true"
+            >
+            <com.vicmikhailau.maskededittext.MaskedEditText
+                android:id="@+id/profile_et_number"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="phone"
+                app:mask="+38(0##)###-##-##"
+                android:imeOptions="actionNext"
+                android:hint="Phone number"
+                />
+        </android.support.design.widget.TextInputLayout>
+
+
+
+
+        <Button
+            android:id="@+id/profile_btn_submit"
+
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="40dp"
+            android:minHeight="35dp"
+            android:text="Submit"
+            />
+
+    </LinearLayout>
+</ScrollView>
