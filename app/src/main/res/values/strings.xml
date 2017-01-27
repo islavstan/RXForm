@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">RXForms</string>
+    <string name="facebook_app_id">240544169724471</string>
+    <string name="fb_login_protocol_scheme">fb240544169724471</string>
 </resources>

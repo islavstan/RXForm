@@ -1,19 +1,38 @@
 package com.islavstan.rxforms;
 
+import android.content.Intent;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.Signature;
 import android.graphics.Color;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.facebook.CallbackManager;
+import com.facebook.FacebookCallback;
+import com.facebook.FacebookException;
+import com.facebook.FacebookSdk;
+import com.facebook.GraphRequest;
+import com.facebook.GraphResponse;
+import com.facebook.appevents.AppEventsLogger;
+import com.facebook.login.LoginResult;
+import com.facebook.login.widget.LoginButton;
 import com.jakewharton.rxbinding.widget.RxTextView;
 import com.vicmikhailau.maskededittext.MaskedEditText;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -39,14 +58,20 @@ public class MainActivity extends AppCompatActivity {
     private Pattern pattern = android.util.Patterns.EMAIL_ADDRESS;
     private Matcher matcher;
     Button btn;
+    Button facebookBtn;
+    LoginButton logBtn;
     MaskedEditText numberET;
+    CallbackManager callbackManager;
+
 //https://github.com/VicMikhailau/MaskedEditText
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+       // printKeyHash();
+        FacebookSdk.sdkInitialize(getApplicationContext());
+        AppEventsLogger.activateApp(this);
         emailInputLayout = (TextInputLayout) findViewById(R.id.profile_input_email);
         passwordInputLayout = (TextInputLayout) findViewById(R.id.profile_input_name);
         phoneInputLayout = (TextInputLayout) findViewById(R.id.profile_input_number);
@@ -55,7 +80,79 @@ public class MainActivity extends AppCompatActivity {
         confirmPasET = (EditText) findViewById(R.id.profile_et_password2);
         passwordET = (EditText) findViewById(R.id.profile_et_name);
         btn = (Button) findViewById(R.id.profile_btn_submit);
+        facebookBtn = (Button) findViewById(R.id.facebookBtn);
         numberET = (MaskedEditText) findViewById(R.id.profile_et_number);
+         logBtn = (LoginButton)findViewById(R.id.login_button) ;
+
+        callbackManager = CallbackManager.Factory.create();
+
+
+        facebookBtn.setOnClickListener(v->logBtn.performClick());
+
+
+        logBtn.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
+            @Override
+            public void onSuccess(LoginResult loginResult) {
+                String accessToken = loginResult.getAccessToken()
+                        .getToken();
+                Log.d("stas", "accessToken = " + accessToken);
+                GraphRequest request = GraphRequest.newMeRequest(
+                        loginResult.getAccessToken(),
+                        new GraphRequest.GraphJSONObjectCallback() {
+                            @Override
+                            public void onCompleted(JSONObject object,
+                                                    GraphResponse response) {
+
+                                Log.i("LoginActivity",
+                                        response.toString());
+                                try {
+                                    String id = object.getString("id");
+                                    Log.d("stas", "id = " + id);
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+
+                            }
+                        });
+                Bundle parameters = new Bundle();
+                parameters.putString("fields",
+                        "id");
+                request.setParameters(parameters);
+                request.executeAsync();
+            }
+
+
+                            @Override
+            public void onCancel() {
+
+            }
+
+            @Override
+            public void onError(FacebookException error) {
+
+            }
+        });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
         btn.setOnClickListener(click -> Toast.makeText(this, "btn press", Toast.LENGTH_SHORT).show());
 
@@ -220,6 +317,28 @@ public class MainActivity extends AppCompatActivity {
         compositeSubscription.add(emailSubscription);
 
 
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        callbackManager.onActivityResult(requestCode, resultCode, data);
+    }
+
+
+    public void printKeyHash() {
+        try {
+            PackageInfo info = getPackageManager().getPackageInfo("com.islavstan.rxforms", PackageManager.GET_SIGNATURES);
+            for (Signature signature : info.signatures) {
+                MessageDigest md = MessageDigest.getInstance("SHA");
+                md.update(signature.toByteArray());
+                Log.e("VIVZ", Base64.encodeToString(md.digest(), Base64.DEFAULT));
+            }
+        } catch (PackageManager.NameNotFoundException e) {
+
+        } catch (NoSuchAlgorithmException e) {
+
+        }
     }
 
     private void disableSignIn() {
